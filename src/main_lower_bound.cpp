@@ -44,12 +44,17 @@ int main(int argc, char *argv[]) {
         cout << data[i].first << '\t' << data[i].second << endl;
     }
     
+    const double epsilon = 1e-4;
     auto res = lower_bound(data.begin(), data.end(),
                            make_pair(10.0, numeric_limits<double>::min()),
-                           [](const pair<double, double>& a, const pair<double, double>& b)
-                           {return a.first < b.first;});
+    // option 1: no custom comparator, uses pair<T,U>::operator<
+    // option 2: custom comparator with lambda expression
+                           //[](auto a, auto b) {return (a.first <= b.first);} );
+    // option 3: custom comparator with epsilon, that needs to pass by value
+                           [=](auto a, auto b) {return b.first - a.first >= epsilon;} );
     if (res != data.end())
-        cout << "First entry greater or equal than time=10 is " << res->first << ", " << res->second << endl;
+        cout << "First entry greater or equal than time=10 was found at index "
+             << res-data.begin() << " with value (" << res->first << ", " << res->second << ")" << endl;
     
     return 0;
 }
